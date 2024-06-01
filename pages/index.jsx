@@ -6,20 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
+import Header from "@/components/Header";
 import { Separator } from "@radix-ui/react-separator";
 
 export default function Home() {
   return (
     <>
-      <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8">
-        <div className="flex items-center">
-          <FlagIcon className="h-8 w-8 mr-2" />
-          <h1 className="text-xl font-bold">LLMETA</h1>
-        </div>
-        <Button className="text-black hover:bg-gray-200" variant="outline">
-          Sign In
-        </Button>
-      </header>
+      <Header></Header>
       <Separator className="my-4" />
       <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md mx-auto">
