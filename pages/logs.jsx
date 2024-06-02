@@ -37,41 +37,6 @@ import {
 export default function Logs() {
   return (
     <div className="flex h-screen">
-      <div className="bg-gray-100 dark:bg-gray-800 p-4 flex flex-col items-start justify-between">
-        <div className="space-y-4">
-          <div className="flex items-center">
-            <FlagIcon className="h-8 w-8 mr-2" />
-            <h1 className="text-xl font-bold">LLMETA</h1>
-          </div>
-          <nav className="space-y-2">
-            <Link
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="#"
-            >
-              <HomeIcon className="h-5 w-5" />
-              Home
-            </Link>
-            <Link
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="#"
-            >
-              <InfoIcon className="h-5 w-5" />
-              Metadata
-            </Link>
-            <Link
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-              href="#"
-            >
-              <HistoryIcon className="h-5 w-5" />
-              Extraction Log
-            </Link>
-          </nav>
-        </div>
-        <Button className="flex items-center gap-2" variant="outline">
-          <UserIcon className="h-5 w-5" />
-          Sign In
-        </Button>
-      </div>
       <div className="flex-1 bg-white dark:bg-gray-950 p-6 overflow-auto">
         <header className="flex items-center justify-between">
           <div className="flex items-center">
@@ -83,7 +48,55 @@ export default function Logs() {
           </Button>
         </header>
         <Separator className="my-4" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Extraction</CardTitle>
+              <CardDescription>
+                Detailed information about your file.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    File Type
+                  </span>
+                  <span className="font-medium">PDF</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    File Size
+                  </span>
+                  <span className="font-medium">2.3 MB</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Resolution
+                  </span>
+                  <span className="font-medium">300 dpi</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Pages
+                  </span>
+                  <span className="font-medium">24</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Author
+                  </span>
+                  <span className="font-medium">John Doe</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Created
+                  </span>
+                  <span className="font-medium">2023-04-15</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader>
               <CardTitle>Metadata</CardTitle>
