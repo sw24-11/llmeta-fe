@@ -10,19 +10,73 @@ import {
 } from "@/components/Card";
 import { Label } from "@/components/Label";
 import { Input } from "@/components/Input";
+import { useState } from "react";
+import axios from "axios";
+import Modal from "@/components/Modal";
 
 export default function SignUp() {
+  const [signUpForm, setSignUpForm] = useState({
+    name: "",
+    job: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [emailCheckClicked, setEmailCheckClicked] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState(false);
+
+  const [passWordLengthPass, setPassWordLengthPass] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(false);
+
+  // 회원가입 버튼 클릭
+  const handleSignUp = async () => {
+    // try {
+    //   const { confirmPassword, ...signUpData } = signUpForm;
+    //   const response = await axios.post("/signup", signUpData);
+    //   // 회원가입 성공 시 처리 로직 추가
+    //   console.log(response.data);
+    // } catch (error) {
+    //   // 회원가입 실패 시 처리 로직 추가
+    //   console.error(error);
+    // }
+  };
+
+  // 이메일 중복 체크
+  const checkEmail = async () => {
+    // try {
+    //   const response = await axios.post("/signup/redundancyCheck", {
+    //     email: signUpForm.email,
+    //   });
+    //   setEmailAvailable(response.data.available);
+    // } catch (error) {
+    //   console.error(error);
+    // }
+    setEmailCheckClicked(true);
+    setEmailAvailable(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "confirmPassword") {
+      setPasswordMatch(signUpForm.password === value);
+    }
+    // 8자리 이상 비밀번호
+    if (name == "password") {
+      if (value.length >= 8) {
+        setPassWordLengthPass(true);
+      } else {
+        setPassWordLengthPass(false);
+      }
+    }
+    setSignUpForm({ ...signUpForm, [name]: value });
+  };
+
+  // const handleClickConfirm = () => {
+  //   setEmailAvailable(true);
+  // };
+
   return (
     <>
-      <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8">
-        <div className="flex items-center">
-          <FlagIcon className="h-8 w-8 mr-2" />
-          <h1 className="text-xl font-bold">LLMETA</h1>
-        </div>
-        <Button className="text-black hover:bg-gray-200" variant="outline">
-          Sign In
-        </Button>
-      </header>
       <Separator className="my-4" />
       <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md mx-auto">
@@ -36,59 +90,113 @@ export default function SignUp() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="John Doe" required />
+                <Input
+                  id="name"
+                  name="name"
+                  placeholder="Kim SeokHee"
+                  required
+                  value={signUpForm.name}
+                  onChange={handleInputChange}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="job">Job</Label>
-                <Input id="job" placeholder="Software Engineer" required />
+                <Input
+                  id="job"
+                  name="job"
+                  placeholder="Frontend Engineer"
+                  required
+                  value={signUpForm.job}
+                  onChange={handleInputChange}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="email"
-                    placeholder="example@email.com"
+                    name="email"
+                    placeholder="cat1181123@naver.com"
                     required
                     type="email"
+                    value={signUpForm.email}
+                    onChange={handleInputChange}
                   />
-                  <Button variant="outline">Check Email</Button>
+                  <Button variant="outline" onClick={checkEmail}>
+                    Check Email
+                  </Button>
                 </div>
+                {emailCheckClicked &&
+                  (emailAvailable ? (
+                    <p className="text-sm text-green-700">Available email</p>
+                  ) : (
+                    <p className="text-sm text-red-700">Unavailable email</p>
+                  ))}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" required type="password" />
+                <Input
+                  id="password"
+                  name="password"
+                  required
+                  placeholder="********"
+                  type="password"
+                  value={signUpForm.password}
+                  onChange={handleInputChange}
+                />
               </div>
+              {!passWordLengthPass && signUpForm.password && (
+                <p className="text-sm text-red-700">
+                  Password must be at least 8 characters
+                </p>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" required type="password" />
+                <Input
+                  id="confirm-password"
+                  name="confirmPassword"
+                  required
+                  placeholder="********"
+                  type="password"
+                  value={signUpForm.confirmPassword}
+                  onChange={handleInputChange}
+                />
+                {!passwordMatch && signUpForm.confirmPassword && (
+                  <p className="text-sm text-red-700">Password do not match</p>
+                )}
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Sign Up</Button>
+              <Button
+                className="w-full"
+                onClick={handleSignUp}
+                disabled={
+                  !signUpForm.name ||
+                  !signUpForm.job ||
+                  !signUpForm.email ||
+                  !signUpForm.password ||
+                  !signUpForm.confirmPassword ||
+                  !emailAvailable ||
+                  !passwordMatch ||
+                  !passWordLengthPass
+                }
+              >
+                Sign Up
+              </Button>
             </CardFooter>
           </Card>
         </div>
+        {/* {emailCheckModalOpen && (
+          <Modal
+            title="Modal Title"
+            description="This is a description for the modal."
+            setModalState={setEmailCheckModalOpen}
+            onConfirm={handleClickConfirm}
+          >
+            <p>This is the content of the modal.</p>
+          </Modal>
+        )} */}
       </main>
     </>
-  );
-}
-
-function FlagIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-      <line x1="4" x2="4" y1="22" y2="15" />
-    </svg>
   );
 }
