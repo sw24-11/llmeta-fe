@@ -6,17 +6,51 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
-import React, { useState } from "react";
-
+import React, { useState, useRef } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import Link from "next/link";
+import { InfoIcon, UploadIcon } from "@/components/Icons";
+
+import { Input } from "@/components/Input";
+import FileTypeCheckbox from "@/components/FileTypecheckbox";
 
 export default function Home() {
-  const [showPdf, setShowPdf] = useState(false);
+  const [selectedFileType, setSelectedFileType] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const fileInputRef = useRef(null);
 
-  // 버튼 클릭 시 pdf 파일 띄우기
-  const handleLearnMore = () => {
-    setShowPdf(true);
+  const handleFileTypeChange = (fileType) => {
+    setSelectedFileType(fileType === selectedFileType ? null : fileType);
+  };
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewURL(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewURL(null);
+    }
+  };
+
+  const isFileAllowed = (file) => {
+    if (selectedFileType === "image") {
+      return file.type === "image/jpeg" || file.type === "image/png";
+    } else if (selectedFileType === "pdf") {
+      return file.type === "application/pdf";
+    }
+    return false;
+  };
+
+  const handleChooseFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   return (
@@ -57,14 +91,18 @@ export default function Home() {
 
         <div className="mt-8 flex justify-center">
           <div className="flex items-center justify-center space-x-4">
-            <Button variant="secondary">
-              <ImageIcon className="h-5 w-5 mr-2" />
-              Image
-            </Button>
-            <Button variant="secondary">
-              <FileIcon className="h-5 w-5 mr-2" />
-              PDF
-            </Button>
+            <FileTypeCheckbox
+              label="Image"
+              value="image"
+              checked={selectedFileType === "image"}
+              onChange={() => handleFileTypeChange("image")}
+            />
+            <FileTypeCheckbox
+              label="PDF"
+              value="pdf"
+              checked={selectedFileType === "pdf"}
+              onChange={() => handleFileTypeChange("pdf")}
+            />
           </div>
         </div>
         <div className="mt-8 flex justify-center">
@@ -77,11 +115,47 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-center">
-                  <Button className="w-full" variant="outline">
+                <div className="flex items-center justify-center flex-col">
+                  {previewURL ? (
+                    selectedFileType === "image" ? (
+                      <img
+                        src={previewURL}
+                        alt="Preview"
+                        className="w-full h-64 object-cover"
+                      />
+                    ) : (
+                      <iframe
+                        src={previewURL}
+                        title="Preview"
+                        className="w-full h-64"
+                      />
+                    )
+                  ) : (
+                    <></>
+                  )}
+
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={handleChooseFileClick}
+                    disabled={!selectedFileType}
+                  >
                     <UploadIcon className="h-5 w-5 mr-2" />
                     Choose File
                   </Button>
+                  <Input
+                    type="file"
+                    accept={
+                      selectedFileType === "image"
+                        ? "image/jpeg,image/png"
+                        : selectedFileType === "pdf"
+                        ? "application/pdf"
+                        : ""
+                    }
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileInputChange}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -89,88 +163,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  );
-}
-
-function FileIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-    </svg>
-  );
-}
-
-function ImageIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-      <circle cx="9" cy="9" r="2" />
-      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-    </svg>
-  );
-}
-
-function InfoIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 16v-4" />
-      <path d="M12 8h.01" />
-    </svg>
-  );
-}
-
-function UploadIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" x2="12" y1="3" y2="15" />
-    </svg>
   );
 }
