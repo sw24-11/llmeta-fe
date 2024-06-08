@@ -50,6 +50,7 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
     setUserName("");
     setShowLogout(false);
     router.push("/login");
