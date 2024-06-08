@@ -1,4 +1,4 @@
-import { LoadingIcon } from "./Icons";
+import { LoadingIcon } from "./constants/Icons";
 
 export default function LoadingOverlay({ isLoading }) {
   return isLoading ? (

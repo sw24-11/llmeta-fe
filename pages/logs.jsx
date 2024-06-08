@@ -13,7 +13,7 @@ import {
   EvaluateIcon,
   ShareIcon,
   StarIcon,
-} from "@/components/Icons";
+} from "@/components/constants/Icons";
 import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import Modal from "@/components/Modal";

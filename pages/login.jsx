@@ -21,6 +21,7 @@ export default function Login() {
     password: "",
   });
 
+  // input 변경 시 loginForm 업데이트
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setLoginForm((prevForm) => ({
@@ -29,18 +30,16 @@ export default function Login() {
     }));
   };
 
+  // 로그인 버튼 클릭
   const handleLogin = async () => {
     try {
       const response = await axios.post("/login", loginForm);
-      // 로그인 성공 시 처리 로직 추가
-      console.log(response);
-      // localStorage에 userName 저장
-      console.log(response);
-      localStorage.setItem("userName", response.data.data.name);
-      localStorage.setItem("userEmail", response.data.data.email);
-      router.push("/");
+      if (response.status === 200) {
+        localStorage.setItem("userName", response.data.data.name);
+        localStorage.setItem("userEmail", response.data.data.email);
+        router.push("/");
+      }
     } catch (error) {
-      // 로그인 실패 시 처리 로직 추가
       alert("로그인 실패");
     }
   };
