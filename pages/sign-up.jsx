@@ -11,8 +11,8 @@ import {
 import { Label } from "@/components/Label";
 import { Input } from "@/components/Input";
 import { useState } from "react";
-import axios from "axios";
-import Modal from "@/components/Modal";
+import axios from "../lib/axios";
+import { useRouter } from "next/router";
 
 export default function SignUp() {
   const [signUpForm, setSignUpForm] = useState({
@@ -27,46 +27,52 @@ export default function SignUp() {
 
   const [passWordLengthPass, setPassWordLengthPass] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(false);
+  const router = useRouter();
 
   // 회원가입 버튼 클릭
   const handleSignUp = async () => {
-    // try {
-    //   const { confirmPassword, ...signUpData } = signUpForm;
-    //   const response = await axios.post("/signup", signUpData);
-    //   // 회원가입 성공 시 처리 로직 추가
-    //   console.log(response.data);
-    // } catch (error) {
-    //   // 회원가입 실패 시 처리 로직 추가
-    //   console.error(error);
-    // }
+    try {
+      // const { confirmPassword, ...signUpData } = signUpForm;
+      console.log(signUpForm);
+      const response = await axios.post("/signup", signUpForm);
+      // 회원가입 성공 시 처리 로직 추가
+      if (response.data.status === 200) {
+        alert("회원가입 성공");
+        router.push("/login");
+      }
+    } catch (error) {
+      // 회원가입 실패 시 처리 로직 추가
+      console.error(error);
+    }
   };
 
   // 이메일 중복 체크
   const checkEmail = async () => {
-    // try {
-    //   const response = await axios.post("/signup/redundancyCheck", {
-    //     email: signUpForm.email,
-    //   });
-    //   setEmailAvailable(response.data.available);
-    // } catch (error) {
-    //   console.error(error);
-    // }
     setEmailCheckClicked(true);
-    setEmailAvailable(true);
+    try {
+      const response = await axios.post("/signup/redundancyCheck", {
+        email: signUpForm.email,
+      });
+      if (response.data.status === 200) {
+        setEmailAvailable(true);
+      } else {
+        setEmailAvailable(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  // input 값 변경 시
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "confirmPassword") {
       setPasswordMatch(signUpForm.password === value);
     }
-    // 8자리 이상 비밀번호
+    // 8자리 이상, 숫자,문자 포함
     if (name == "password") {
-      if (value.length >= 8) {
-        setPassWordLengthPass(true);
-      } else {
-        setPassWordLengthPass(false);
-      }
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      setPassWordLengthPass(passwordRegex.test(value));
     }
     setSignUpForm({ ...signUpForm, [name]: value });
   };
@@ -147,7 +153,7 @@ export default function SignUp() {
               </div>
               {!passWordLengthPass && signUpForm.password && (
                 <p className="text-sm text-red-700">
-                  Password must be at least 8 characters
+                  at least 8 characters long and include a number and a letter
                 </p>
               )}
               <div className="space-y-2">
