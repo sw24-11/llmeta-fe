@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }) {
       if (
         !userName &&
         router.pathname !== "/login" &&
-        router.pathname !== "/"
+        router.pathname !== "/sign-up"
       ) {
         alert("로그인이 필요합니다.");
         router.push("/login");
