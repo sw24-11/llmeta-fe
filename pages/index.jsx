@@ -6,23 +6,116 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
-import React, { useState } from "react";
-
+import React, { useState, useRef } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import Link from "next/link";
+import { InfoIcon, LoadingIcon, UploadIcon } from "@/components/Icons";
+
+import { Input } from "@/components/Input";
+import FileTypeCheckbox from "@/components/FileTypeCheckbox";
+import { useRouter } from "next/router";
+import axios from "../lib/axios";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function Home() {
-  const [showPdf, setShowPdf] = useState(false);
+  const [selectedFileType, setSelectedFileType] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef(null);
+  const router = useRouter();
 
-  // 버튼 클릭 시 pdf 파일 띄우기
-  const handleLearnMore = () => {
-    setShowPdf(true);
+  // 파일 유형 선택
+  const handleFileTypeChange = (fileType) => {
+    setSelectedFileType(fileType === selectedFileType ? null : fileType);
+    // 파일 유형이 변경되면 선택한 파일과 미리보기 URL 초기화
+    if (fileType !== selectedFileType) {
+      setSelectedFile(null);
+      setPreviewURL(null);
+    }
+  };
+
+  // 파일 선택
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewURL(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewURL(null);
+    }
+  };
+
+  const isFileAllowed = (file) => {
+    if (selectedFileType === "image") {
+      return file.type === "image/jpeg" || file.type === "image/png";
+    } else if (selectedFileType === "pdf") {
+      return file.type === "application/pdf";
+    }
+    return false;
+  };
+
+  // 파일 선택 버튼 클릭
+  const handleChooseFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // 메타데이터 추출
+  const handleExtract = async () => {
+    if (!selectedFile || !isFileAllowed(selectedFile)) {
+      alert("Please select a valid file.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      // type: "IMAGE" | "PAPER"
+      let type;
+      if (selectedFileType === "image") {
+        type = "IMAGE";
+      } else if (selectedFileType === "pdf") {
+        type = "PAPER";
+      }
+
+      const response = await axios.post("/metadata/extraction", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          type,
+        },
+      });
+
+      console.log(response);
+
+      // Handle successful response
+      setIsLoading(false);
+      router.push(`/logs`);
+    } catch (error) {
+      // Handle error
+      setIsLoading(false);
+      console.error(error);
+      alert("An error occurred while extracting metadata.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
       <Separator className="my-4" />
       <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <LoadingOverlay isLoading={isLoading} />
         <div className="w-full max-w-md mx-auto">
           <Card>
             <CardHeader>
@@ -57,16 +150,21 @@ export default function Home() {
 
         <div className="mt-8 flex justify-center">
           <div className="flex items-center justify-center space-x-4">
-            <Button variant="secondary">
-              <ImageIcon className="h-5 w-5 mr-2" />
-              Image
-            </Button>
-            <Button variant="secondary">
-              <FileIcon className="h-5 w-5 mr-2" />
-              PDF
-            </Button>
+            <FileTypeCheckbox
+              label="Image"
+              value="image"
+              checked={selectedFileType === "image"}
+              onChange={() => handleFileTypeChange("image")}
+            />
+            <FileTypeCheckbox
+              label="PDF"
+              value="pdf"
+              checked={selectedFileType === "pdf"}
+              onChange={() => handleFileTypeChange("pdf")}
+            />
           </div>
         </div>
+
         <div className="mt-8 flex justify-center">
           <div className="w-full max-w-md">
             <Card>
@@ -77,100 +175,78 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-center">
-                  <Button className="w-full" variant="outline">
+                <div className="flex items-center justify-center flex-col">
+                  {previewURL ? (
+                    selectedFileType === "image" ? (
+                      <img
+                        src={previewURL}
+                        alt="Preview"
+                        className="w-full object-cover mb-4"
+                      />
+                    ) : (
+                      <iframe
+                        src={previewURL}
+                        title="Preview"
+                        className="w-full h-96 object-cover mb-4"
+                      />
+                    )
+                  ) : (
+                    <></>
+                  )}
+
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={handleChooseFileClick}
+                    disabled={!selectedFileType}
+                  >
                     <UploadIcon className="h-5 w-5 mr-2" />
                     Choose File
                   </Button>
+                  <Input
+                    type="file"
+                    accept={
+                      selectedFileType === "image"
+                        ? "image/jpeg,image/png"
+                        : selectedFileType === "pdf"
+                        ? "application/pdf"
+                        : ""
+                    }
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileInputChange}
+                  />
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
+        <div className="mt-8 flex justify-center">
+          <div className="w-full max-w-md">
+            <Button
+              className="w-full mb-4"
+              onClick={handleExtract}
+              disabled={!selectedFile || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <LoadingIcon className="h-5 w-5 mr-2 animate-spin" />
+                  Extracting...
+                </>
+              ) : (
+                "Extract"
+              )}
+            </Button>
+            <Button
+              variant="default"
+              asChild="true"
+              className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300"
+            >
+              <Link href="/logs">View Logs</Link>
+            </Button>
+          </div>
+        </div>
       </main>
     </>
-  );
-}
-
-function FileIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-    </svg>
-  );
-}
-
-function ImageIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-      <circle cx="9" cy="9" r="2" />
-      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-    </svg>
-  );
-}
-
-function InfoIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 16v-4" />
-      <path d="M12 8h.01" />
-    </svg>
-  );
-}
-
-function UploadIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" x2="12" y1="3" y2="15" />
-    </svg>
   );
 }
