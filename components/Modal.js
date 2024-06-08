@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/Button";
 
-const Modal = ({ title, description, children, setModalState, onConfirm }) => {
+const Modal = ({ title, description, children, onConfirm, onClose }) => {
   const closeModal = () => {
-    setModalState(false);
+    onClose();
   };
 
   // 취소 버튼
@@ -17,6 +17,11 @@ const Modal = ({ title, description, children, setModalState, onConfirm }) => {
     closeModal();
   };
 
+  // 모달 내부 클릭 시 이벤트 전파 방지
+  const handleModalClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50"
@@ -27,9 +32,12 @@ const Modal = ({ title, description, children, setModalState, onConfirm }) => {
         onClick={closeModal}
       ></div>
 
-      <div className="relative rounded-lg bg-white p-8">
+      <div
+        className="relative rounded-lg bg-white p-8"
+        onClick={handleModalClick}
+      >
         <h2 className="text-xl font-medium leading-6 text-gray-900">{title}</h2>
-        <p className="mt-2 text-sm text-gray-500">{description}</p>
+        <p className="mt-2 mb-2 text-sm text-gray-500">{description}</p>
 
         {children}
 
