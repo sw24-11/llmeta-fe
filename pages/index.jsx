@@ -9,21 +9,33 @@ import {
 import React, { useState, useRef } from "react";
 import { Separator } from "@radix-ui/react-separator";
 import Link from "next/link";
-import { InfoIcon, UploadIcon } from "@/components/Icons";
+import { InfoIcon, LoadingIcon, UploadIcon } from "@/components/Icons";
 
 import { Input } from "@/components/Input";
-import FileTypeCheckbox from "@/components/FileTypecheckbox";
+import FileTypeCheckbox from "@/components/FileTypeCheckbox";
+import { useRouter } from "next/router";
+import axios from "../lib/axios";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function Home() {
   const [selectedFileType, setSelectedFileType] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const router = useRouter();
 
+  // 파일 유형 선택
   const handleFileTypeChange = (fileType) => {
     setSelectedFileType(fileType === selectedFileType ? null : fileType);
+    // 파일 유형이 변경되면 선택한 파일과 미리보기 URL 초기화
+    if (fileType !== selectedFileType) {
+      setSelectedFile(null);
+      setPreviewURL(null);
+    }
   };
 
+  // 파일 선택
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -47,9 +59,55 @@ export default function Home() {
     return false;
   };
 
+  // 파일 선택 버튼 클릭
   const handleChooseFileClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  // 메타데이터 추출
+  const handleExtract = async () => {
+    if (!selectedFile || !isFileAllowed(selectedFile)) {
+      alert("Please select a valid file.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      // type: "IMAGE" | "PAPER"
+      let type;
+      if (selectedFileType === "image") {
+        type = "IMAGE";
+      } else if (selectedFileType === "pdf") {
+        type = "PAPER";
+      }
+
+      const response = await axios.post("/metadata/extraction", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          type,
+        },
+      });
+
+      console.log(response);
+
+      // Handle successful response
+      setIsLoading(false);
+      router.push(`/logs`);
+    } catch (error) {
+      // Handle error
+      setIsLoading(false);
+      console.error(error);
+      alert("An error occurred while extracting metadata.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,6 +115,7 @@ export default function Home() {
     <>
       <Separator className="my-4" />
       <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <LoadingOverlay isLoading={isLoading} />
         <div className="w-full max-w-md mx-auto">
           <Card>
             <CardHeader>
@@ -105,6 +164,7 @@ export default function Home() {
             />
           </div>
         </div>
+
         <div className="mt-8 flex justify-center">
           <div className="w-full max-w-md">
             <Card>
@@ -121,13 +181,13 @@ export default function Home() {
                       <img
                         src={previewURL}
                         alt="Preview"
-                        className="w-full h-64 object-cover"
+                        className="w-full object-cover mb-4"
                       />
                     ) : (
                       <iframe
                         src={previewURL}
                         title="Preview"
-                        className="w-full h-64"
+                        className="w-full h-96 object-cover mb-4"
                       />
                     )
                   ) : (
@@ -159,6 +219,31 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+        <div className="mt-8 flex justify-center">
+          <div className="w-full max-w-md">
+            <Button
+              className="w-full mb-4"
+              onClick={handleExtract}
+              disabled={!selectedFile || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <LoadingIcon className="h-5 w-5 mr-2 animate-spin" />
+                  Extracting...
+                </>
+              ) : (
+                "Extract"
+              )}
+            </Button>
+            <Button
+              variant="default"
+              asChild="true"
+              className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300"
+            >
+              <Link href="/logs">View Logs</Link>
+            </Button>
           </div>
         </div>
       </main>
