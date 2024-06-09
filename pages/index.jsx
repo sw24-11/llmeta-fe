@@ -80,7 +80,6 @@ export default function Home() {
 
     try {
       const formData = new FormData();
-      formData.append("file", selectedFile);
 
       // type: "IMAGE" | "PAPER"
       let type;
@@ -90,16 +89,20 @@ export default function Home() {
         type = "PAPER";
       }
 
+      formData.append("file", selectedFile);
+      formData.append("dataType", type);
+      formData.append("email", localStorage.getItem("userEmail") || "");
+
+      console.log(localStorage.getItem("userEmail") || "");
+
       const response = await axios.post("/metadata/extraction", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        params: {
-          type,
-        },
       });
 
       console.log(response);
+      alert("Metadata extraction successful. moving to logs page.");
 
       // Handle successful response
       setIsLoading(false);
