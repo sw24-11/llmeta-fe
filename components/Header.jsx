@@ -57,7 +57,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8">
+    <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8 shadow-md border-b border-gray-200">
       <div className="flex items-center">
         <FlagIcon className="h-8 w-8 mr-2" />
         <h1 className="text-xl font-bold">LLMETA</h1>
