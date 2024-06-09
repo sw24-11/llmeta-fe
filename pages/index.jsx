@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
+import Image from "next/image";
 
 export default function Home() {
   const [selectedFileType, setSelectedFileType] = useState(null);
@@ -183,16 +184,32 @@ export default function Home() {
                 <div className="flex items-center justify-center flex-col">
                   {previewURL ? (
                     selectedFileType === "image" ? (
-                      <img
-                        src={previewURL}
-                        alt="Preview"
-                        className="w-full object-cover mb-4"
-                      />
+                      <div
+                        className="mb-4 relative"
+                        style={{
+                          height: "0",
+                          width: "100%",
+                          paddingBottom: "56.25%",
+                        }}
+                      >
+                        <Image
+                          src={previewURL}
+                          alt="Preview"
+                          layout="fill"
+                          objectFit="contain"
+                          className="rounded-lg border border-slate-200 dark:border-slate-800"
+                        />
+                      </div>
                     ) : (
                       <iframe
                         src={previewURL}
                         title="Preview"
-                        className="w-full h-96 object-cover mb-4"
+                        style={{
+                          aspectRatio: "1/1.414",
+                          width: "100%",
+                          border: "none",
+                        }}
+                        className="rounded-lg mb-4"
                       />
                     )
                   ) : (

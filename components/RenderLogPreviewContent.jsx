@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 // Preview Content 렌더링
 export default function RenderLogPreviewContent({ selectedExtraction }) {
   return (
@@ -15,15 +17,22 @@ export default function RenderLogPreviewContent({ selectedExtraction }) {
             }}
           />
         ) : (
-          <img
-            alt="File Preview"
-            className="rounded-lg object-contain"
-            src={`data:image/png;base64,${selectedExtraction.input.file}`}
+          <div
+            className="relative"
             style={{
+              height: "0",
               width: "100%",
-              objectFit: "cover",
+              paddingBottom: "56.25%",
             }}
-          />
+          >
+            <Image
+              alt="File Preview"
+              className="rounded-lg"
+              src={`data:image/png;base64,${selectedExtraction.input.file}`}
+              layout="fill"
+              objectFit="contain"
+            />
+          </div>
         )
       ) : (
         <div className="text-gray-500 dark:text-gray-400">
