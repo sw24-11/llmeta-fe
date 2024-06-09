@@ -22,6 +22,7 @@ export default function Logs() {
   const [evalueateModal, setEvalueateModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   // Fetch User Email from LocalStorage
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function Logs() {
   // LeftBar Click Handler
   const handleExtractionClick = (extraction) => {
     setSelectedExtraction(extraction);
+    setShowAll(false);
   };
 
   const handleClickDownload = () => {
@@ -204,6 +206,8 @@ export default function Logs() {
             <CardContent>
               <RenderLogMetaDataContent
                 selectedExtraction={selectedExtraction}
+                showAll={showAll}
+                toogleShowAll={() => setShowAll(!showAll)}
               />
             </CardContent>
           </Card>
