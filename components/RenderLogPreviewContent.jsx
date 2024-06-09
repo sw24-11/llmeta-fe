@@ -36,7 +36,7 @@ export default function RenderLogPreviewContent({ selectedExtraction }) {
         )
       ) : (
         <div className="text-gray-500 dark:text-gray-400">
-          No preview available.
+          Select an extraction to preview
         </div>
       )}
     </div>
