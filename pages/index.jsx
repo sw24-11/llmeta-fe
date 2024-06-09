@@ -1,4 +1,17 @@
 import { Button } from "@/components/Button";
+import React, { useState, useRef } from "react";
+import Link from "next/link";
+import {
+  InfoIcon,
+  LoadingIcon,
+  UploadIcon,
+} from "@/components/constants/Icons";
+
+import { Input } from "@/components/Input";
+import FileTypeCheckbox from "@/components/FileTypeCheckbox";
+import { useRouter } from "next/router";
+import axios from "../lib/axios";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import {
   Card,
   CardContent,
@@ -6,16 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Card";
-import React, { useState, useRef } from "react";
-import { Separator } from "@radix-ui/react-separator";
-import Link from "next/link";
-import { InfoIcon, LoadingIcon, UploadIcon } from "@/components/Icons";
-
-import { Input } from "@/components/Input";
-import FileTypeCheckbox from "@/components/FileTypeCheckbox";
-import { useRouter } from "next/router";
-import axios from "../lib/axios";
-import LoadingOverlay from "@/components/LoadingOverlay";
+import Image from "next/image";
 
 export default function Home() {
   const [selectedFileType, setSelectedFileType] = useState(null);
@@ -25,7 +29,7 @@ export default function Home() {
   const fileInputRef = useRef(null);
   const router = useRouter();
 
-  // 파일 유형 선택
+  // 파일 유형 선택 (checkbox)
   const handleFileTypeChange = (fileType) => {
     setSelectedFileType(fileType === selectedFileType ? null : fileType);
     // 파일 유형이 변경되면 선택한 파일과 미리보기 URL 초기화
@@ -35,7 +39,14 @@ export default function Home() {
     }
   };
 
-  // 파일 선택
+  // 파일 선택 버튼 클릭(Choose File 버튼 클릭 시 hidden input 클릭)
+  const handleChooseFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // 파일 선택 (hidden Input)
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -59,13 +70,6 @@ export default function Home() {
     return false;
   };
 
-  // 파일 선택 버튼 클릭
-  const handleChooseFileClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   // 메타데이터 추출
   const handleExtract = async () => {
     if (!selectedFile || !isFileAllowed(selectedFile)) {
@@ -77,7 +81,6 @@ export default function Home() {
 
     try {
       const formData = new FormData();
-      formData.append("file", selectedFile);
 
       // type: "IMAGE" | "PAPER"
       let type;
@@ -87,16 +90,17 @@ export default function Home() {
         type = "PAPER";
       }
 
+      formData.append("file", selectedFile);
+      formData.append("dataType", type);
+      formData.append("email", localStorage.getItem("userEmail") || "");
+
       const response = await axios.post("/metadata/extraction", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        params: {
-          type,
-        },
       });
 
-      console.log(response);
+      alert("Metadata extraction successful. moving to logs page.");
 
       // Handle successful response
       setIsLoading(false);
@@ -104,7 +108,6 @@ export default function Home() {
     } catch (error) {
       // Handle error
       setIsLoading(false);
-      console.error(error);
       alert("An error occurred while extracting metadata.");
     } finally {
       setIsLoading(false);
@@ -113,7 +116,6 @@ export default function Home() {
 
   return (
     <>
-      <Separator className="my-4" />
       <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <LoadingOverlay isLoading={isLoading} />
         <div className="w-full max-w-md mx-auto">
@@ -178,16 +180,32 @@ export default function Home() {
                 <div className="flex items-center justify-center flex-col">
                   {previewURL ? (
                     selectedFileType === "image" ? (
-                      <img
-                        src={previewURL}
-                        alt="Preview"
-                        className="w-full object-cover mb-4"
-                      />
+                      <div
+                        className="mb-4 relative"
+                        style={{
+                          height: "0",
+                          width: "100%",
+                          paddingBottom: "56.25%",
+                        }}
+                      >
+                        <Image
+                          src={previewURL}
+                          alt="Preview"
+                          layout="fill"
+                          objectFit="contain"
+                          className="rounded-lg border border-slate-200 dark:border-slate-800"
+                        />
+                      </div>
                     ) : (
                       <iframe
                         src={previewURL}
                         title="Preview"
-                        className="w-full h-96 object-cover mb-4"
+                        style={{
+                          aspectRatio: "1/1.414",
+                          width: "100%",
+                          border: "none",
+                        }}
+                        className="rounded-lg mb-4"
                       />
                     )
                   ) : (

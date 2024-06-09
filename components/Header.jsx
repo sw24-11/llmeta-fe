@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./Button";
+import Link from "next/link";
 
 function FlagIcon(props) {
   return (
@@ -57,11 +58,13 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8">
-      <div className="flex items-center">
-        <FlagIcon className="h-8 w-8 mr-2" />
-        <h1 className="text-xl font-bold">LLMETA</h1>
-      </div>
+    <header className="flex items-center justify-between bg-white px-4 py-3 text-black sm:px-6 lg:px-8 shadow-md border-b border-gray-200">
+      <Link href="/">
+        <div className="flex items-center">
+          <FlagIcon className="h-8 w-8 mr-2" />
+          <h1 className="text-xl font-bold">LLMETA</h1>
+        </div>
+      </Link>
       <div className="relative flex items-center">
         {router.pathname !== "/login" && router.pathname !== "/sign-up" ? (
           <>
