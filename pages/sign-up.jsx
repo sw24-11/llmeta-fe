@@ -32,8 +32,6 @@ export default function SignUp() {
   // 회원가입 버튼 클릭
   const handleSignUp = async () => {
     try {
-      // const { confirmPassword, ...signUpData } = signUpForm;
-      console.log(signUpForm);
       const response = await axios.post("/signup", signUpForm);
       // 회원가입 성공 시 처리 로직 추가
       if (response.data.status === 200) {
@@ -42,7 +40,7 @@ export default function SignUp() {
       }
     } catch (error) {
       // 회원가입 실패 시 처리 로직 추가
-      console.error(error);
+      alert("회원가입 실패");
     }
   };
 
@@ -59,7 +57,7 @@ export default function SignUp() {
         setEmailAvailable(false);
       }
     } catch (error) {
-      console.error(error);
+      alert("이메일 중복 체크 실패");
     }
   };
 
@@ -76,10 +74,6 @@ export default function SignUp() {
     }
     setSignUpForm({ ...signUpForm, [name]: value });
   };
-
-  // const handleClickConfirm = () => {
-  //   setEmailAvailable(true);
-  // };
 
   return (
     <>
@@ -192,16 +186,6 @@ export default function SignUp() {
             </CardFooter>
           </Card>
         </div>
-        {/* {emailCheckModalOpen && (
-          <Modal
-            title="Modal Title"
-            description="This is a description for the modal."
-            setModalState={setEmailCheckModalOpen}
-            onConfirm={handleClickConfirm}
-          >
-            <p>This is the content of the modal.</p>
-          </Modal>
-        )} */}
       </main>
     </>
   );

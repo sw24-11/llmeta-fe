@@ -94,15 +94,12 @@ export default function Home() {
       formData.append("dataType", type);
       formData.append("email", localStorage.getItem("userEmail") || "");
 
-      console.log(localStorage.getItem("userEmail") || "");
-
       const response = await axios.post("/metadata/extraction", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log(response);
       alert("Metadata extraction successful. moving to logs page.");
 
       // Handle successful response
@@ -111,7 +108,6 @@ export default function Home() {
     } catch (error) {
       // Handle error
       setIsLoading(false);
-      console.error(error);
       alert("An error occurred while extracting metadata.");
     } finally {
       setIsLoading(false);
