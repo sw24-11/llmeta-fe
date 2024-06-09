@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { Button } from "@/components/Button";
-
 import {
   CardTitle,
   CardDescription,
@@ -8,28 +5,24 @@ import {
   CardContent,
   Card,
 } from "@/components/Card";
-import {
-  DownloadIcon,
-  EvaluateIcon,
-  ShareIcon,
-  StarIcon,
-} from "@/components/constants/Icons";
+import { StarIcon } from "@/components/constants/Icons";
 import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import Modal from "@/components/Modal";
 import RenderLogActionsContent from "@/components/RenderLogActionsContent";
 import RenderLogMetaDataContent from "@/components/RenderLogMetaDataContent";
 import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
+import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
 
 export default function Logs() {
   const [userEmail, setUserEmail] = useState("");
   const [extractions, setExtractions] = useState([]);
   const [selectedExtraction, setSelectedExtraction] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [evalueateModal, setEvalueateModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
 
-  // userEmail 등록
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedUserName = localStorage.getItem("userEmail");
@@ -39,19 +32,19 @@ export default function Logs() {
     }
   }, []);
 
-  // metaData 요청
   useEffect(() => {
     if (userEmail) {
       const fetchMetadata = async () => {
         try {
-          console.log(userEmail);
+          setIsLoading(true);
           const response = await axios.get("/metadata/logs", {
             params: { email: userEmail },
           });
-          console.log(response.data.data.logs);
-          setExtractions(response.data.data.logs); // 추출 데이터를 state에 저장
+          setExtractions(response.data.data.logs);
         } catch (e) {
-          console.error(e);
+          alert("Failed to fetch metadata.");
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -59,12 +52,10 @@ export default function Logs() {
     }
   }, [userEmail]);
 
-  // LeftBar에서 Extraction 클릭
   const handleExtractionClick = (extraction) => {
     setSelectedExtraction(extraction);
   };
 
-  // Download 버튼 클릭
   const handleClickDownload = () => {
     if (selectedExtraction?.input?.file) {
       const downloadLink = document.createElement("a");
@@ -74,22 +65,18 @@ export default function Logs() {
     }
   };
 
-  // Evaluate 버튼 클릭 => Modal 열기
   const handleClickEvaluate = () => {
     setEvalueateModal(true);
   };
 
-  // 별점 클릭
   const handleStarClick = (value) => {
     setRating(value);
   };
 
-  // 피드백 입력
   const handleFeedbackChange = (e) => {
     setFeedback(e.target.value);
   };
 
-  // 평가 및 피드백 제출
   const handleSubmit = async () => {
     try {
       const response = await axios.post("/metadata/evaluation", {
@@ -104,13 +91,11 @@ export default function Logs() {
       alert("평가에 실패했습니다.");
     } finally {
       setEvalueateModal(false);
-      // 평가 및 피드백 초기화
       setRating(0);
       setFeedback("");
     }
   };
 
-  // Modal 닫기
   const handleCloseModal = () => {
     setFeedback("");
     setRating(0);
@@ -122,7 +107,13 @@ export default function Logs() {
       {/* LeftBar */}
       <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 w-56">
         <nav className="space-y-2 w-full overflow-y-auto">
-          {extractions?.length ? (
+          {isLoading ? (
+            <>
+              <LogLeftBarSkeleton />
+              <LogLeftBarSkeleton />
+              <LogLeftBarSkeleton />
+            </>
+          ) : extractions.length ? (
             extractions.map((extraction, index) => (
               <div
                 key={index}
@@ -142,7 +133,6 @@ export default function Logs() {
       {/* Right Content */}
       <div className="flex-1 bg-gray-100 dark:bg-gray-950 p-6 overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* metaData */}
           <Card>
             <CardHeader>
               <CardTitle>Metadata</CardTitle>
@@ -156,7 +146,6 @@ export default function Logs() {
               />
             </CardContent>
           </Card>
-          {/* Preview */}
           <Card>
             <CardHeader>
               <CardTitle>Preview</CardTitle>
@@ -170,7 +159,6 @@ export default function Logs() {
               />
             </CardContent>
           </Card>
-          {/* Actions */}
           <Card>
             <CardHeader>
               <CardTitle>Actions</CardTitle>
