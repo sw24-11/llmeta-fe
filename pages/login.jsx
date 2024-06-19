@@ -45,46 +45,43 @@ export default function Login() {
   };
 
   return (
-    <>
-      <Separator className="my-4" />
-      <main className="flex-grow container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Login</CardTitle>
-              <CardDescription>
-                Enter your email and password to access the LLMETA service.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="cat1181123@naver.com"
-                  type="email"
-                  value={loginForm.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={loginForm.password}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full" onClick={handleLogin}>
-                Login
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </main>
-    </>
+    <main className="flex-grow container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>
+              Enter your email and password to access the LLMETA service.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="cat1181123@naver.com"
+                type="email"
+                value={loginForm.email}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={loginForm.password}
+                onChange={handleInputChange}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full" onClick={handleLogin}>
+              Login
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </main>
   );
 }

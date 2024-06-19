@@ -69,124 +69,121 @@ export default function SignUp() {
     }
     // 8자리 이상, 숫자,문자 포함
     if (name == "password") {
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/;
       setPassWordLengthPass(passwordRegex.test(value));
     }
     setSignUpForm({ ...signUpForm, [name]: value });
   };
 
   return (
-    <>
-      <Separator className="my-4" />
-      <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign Up</CardTitle>
-              <CardDescription>
-                Enter your information to create an account.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+    <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign Up</CardTitle>
+            <CardDescription>
+              Enter your information to create an account.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="Kim SeokHee"
+                required
+                value={signUpForm.name}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="job">Job</Label>
+              <Input
+                id="job"
+                name="job"
+                placeholder="Frontend Engineer"
+                required
+                value={signUpForm.job}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="flex items-center space-x-2">
                 <Input
-                  id="name"
-                  name="name"
-                  placeholder="Kim SeokHee"
+                  id="email"
+                  name="email"
+                  placeholder="cat1181123@naver.com"
                   required
-                  value={signUpForm.name}
+                  type="email"
+                  value={signUpForm.email}
                   onChange={handleInputChange}
                 />
+                <Button variant="outline" onClick={checkEmail}>
+                  Check Email
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="job">Job</Label>
-                <Input
-                  id="job"
-                  name="job"
-                  placeholder="Frontend Engineer"
-                  required
-                  value={signUpForm.job}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="email"
-                    name="email"
-                    placeholder="cat1181123@naver.com"
-                    required
-                    type="email"
-                    value={signUpForm.email}
-                    onChange={handleInputChange}
-                  />
-                  <Button variant="outline" onClick={checkEmail}>
-                    Check Email
-                  </Button>
-                </div>
-                {emailCheckClicked &&
-                  (emailAvailable ? (
-                    <p className="text-sm text-green-700">Available email</p>
-                  ) : (
-                    <p className="text-sm text-red-700">Unavailable email</p>
-                  ))}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  required
-                  placeholder="********"
-                  type="password"
-                  value={signUpForm.password}
-                  onChange={handleInputChange}
-                />
-              </div>
-              {!passWordLengthPass && signUpForm.password && (
-                <p className="text-sm text-red-700">
-                  at least 8 characters long and include a number and a letter
-                </p>
+              {emailCheckClicked &&
+                (emailAvailable ? (
+                  <p className="text-sm text-green-700">Available email</p>
+                ) : (
+                  <p className="text-sm text-red-700">Unavailable email</p>
+                ))}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                required
+                placeholder="********"
+                type="password"
+                value={signUpForm.password}
+                onChange={handleInputChange}
+              />
+            </div>
+            {!passWordLengthPass && signUpForm.password && (
+              <p className="text-sm text-red-700">
+                at least 8 characters long and include a number and a letter
+              </p>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                name="confirmPassword"
+                required
+                placeholder="********"
+                type="password"
+                value={signUpForm.confirmPassword}
+                onChange={handleInputChange}
+              />
+              {!passwordMatch && signUpForm.confirmPassword && (
+                <p className="text-sm text-red-700">Password do not match</p>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input
-                  id="confirm-password"
-                  name="confirmPassword"
-                  required
-                  placeholder="********"
-                  type="password"
-                  value={signUpForm.confirmPassword}
-                  onChange={handleInputChange}
-                />
-                {!passwordMatch && signUpForm.confirmPassword && (
-                  <p className="text-sm text-red-700">Password do not match</p>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                className="w-full"
-                onClick={handleSignUp}
-                disabled={
-                  !signUpForm.name ||
-                  !signUpForm.job ||
-                  !signUpForm.email ||
-                  !signUpForm.password ||
-                  !signUpForm.confirmPassword ||
-                  !emailAvailable ||
-                  !passwordMatch ||
-                  !passWordLengthPass
-                }
-              >
-                Sign Up
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </main>
-    </>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button
+              className="w-full"
+              onClick={handleSignUp}
+              disabled={
+                !signUpForm.name ||
+                !signUpForm.job ||
+                !signUpForm.email ||
+                !signUpForm.password ||
+                !signUpForm.confirmPassword ||
+                !emailAvailable ||
+                !passwordMatch ||
+                !passWordLengthPass
+              }
+            >
+              Sign Up
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </main>
   );
 }

@@ -2,26 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./Button";
 import Link from "next/link";
-
-function FlagIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-      <line x1="4" x2="4" y1="22" y2="15" />
-    </svg>
-  );
-}
+import { FlagIcon } from "./constants/Icons";
 
 export default function Header() {
   const router = useRouter();
@@ -68,6 +49,7 @@ export default function Header() {
       <div className="relative flex items-center">
         {router.pathname !== "/login" && router.pathname !== "/sign-up" ? (
           <>
+            {/* 유저 이름 버튼 */}
             <Button
               className={`text-black hover:bg-gray-200 transition-transform ${
                 showLogout ? "mr-4" : ""
@@ -77,6 +59,7 @@ export default function Header() {
             >
               {userName}
             </Button>
+            {/* 로그아웃 버튼 */}
             {showLogout && (
               <Button
                 className="text-black hover:bg-gray-200"
@@ -88,11 +71,8 @@ export default function Header() {
             )}
           </>
         ) : (
-          <Button
-            className="text-black hover:bg-gray-200"
-            variant="outline"
-            onClick={handleClickMove}
-          >
+          // 로그인, 회원가입 버튼
+          <Button variant="outline" onClick={handleClickMove}>
             {router.pathname === "/login" ? "Sign Up" : "Login"}
           </Button>
         )}

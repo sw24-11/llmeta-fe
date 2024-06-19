@@ -204,9 +204,7 @@ function UserIcon(props) {
   );
 }
 
-import React from "react";
-
-const EvaluateIcon = ({ className }) => {
+function EvaluateIcon(className) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -223,9 +221,9 @@ const EvaluateIcon = ({ className }) => {
       />
     </svg>
   );
-};
+}
 
-const StarIcon = ({ filled, onClick }) => (
+function StarIcon({ filled, onClick }) {
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className="h-6 w-6 cursor-pointer"
@@ -240,10 +238,10 @@ const StarIcon = ({ filled, onClick }) => (
       strokeWidth={2}
       d="M12 2L15.09 8.09L22 9.27L17 14.14L18.18 21L12 17.77L5.82 21L7 14.14L2 9.27L8.91 8.09L12 2z"
     />
-  </svg>
-);
+  </svg>;
+}
 
-const LoadingIcon = ({ className, ...props }) => (
+function LoadingIcon({ className, ...props }) {
   <svg
     className={`animate-spin ${className}`}
     xmlns="http://www.w3.org/2000/svg"
@@ -264,8 +262,8 @@ const LoadingIcon = ({ className, ...props }) => (
       fill="currentColor"
       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
     />
-  </svg>
-);
+  </svg>;
+}
 
 export {
   FileIcon,
