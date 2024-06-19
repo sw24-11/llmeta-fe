@@ -16,7 +16,6 @@ import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
 
 export async function getServerSideProps(context) {
   const userEmail = context.req.cookies.userEmail;
-  alert(userEmail);
   let extractions = [];
 
   try {
