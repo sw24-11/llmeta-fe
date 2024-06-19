@@ -14,47 +14,74 @@ import RenderLogMetaDataContent from "@/components/RenderLogMetaDataContent";
 import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
 import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
 
-export default function Logs() {
-  const [userEmail, setUserEmail] = useState("");
-  const [extractions, setExtractions] = useState([]);
+export async function getServerSideProps(context) {
+  const userEmail = context.req.cookies.userEmail;
+  let extractions = [];
+
+  try {
+    const response = await axios.get("/metadata/logs", {
+      params: { email: userEmail },
+    });
+    extractions = response.data.data.logs;
+  } catch (e) {
+    alert("Failed to fetch metadata.");
+  }
+
+  return {
+    props: {
+      userEmail,
+      extractions: extractions,
+    },
+  };
+}
+
+export default function Logs({ extractions }) {
+  // const [userEmail, setUserEmail] = useState("");
+  // const [extractions, setExtractions] = useState([]);
   const [selectedExtraction, setSelectedExtraction] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [evalueateModal, setEvalueateModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [showAll, setShowAll] = useState(false);
 
+  // useEffect(() => {
+  //   if (extractions) {
+  //     setIsLoading(false);
+  //   }
+  // }, [extractions]);
+
   // Fetch User Email from LocalStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUserName = localStorage.getItem("userEmail");
-      if (storedUserName) {
-        setUserEmail(storedUserName);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedUserName = localStorage.getItem("userEmail");
+  //     if (storedUserName) {
+  //       setUserEmail(storedUserName);
+  //     }
+  //   }
+  // }, []);
 
   // Fetch Metadata Logs
-  useEffect(() => {
-    if (userEmail) {
-      const fetchMetadata = async () => {
-        try {
-          setIsLoading(true);
-          const response = await axios.get("/metadata/logs", {
-            params: { email: userEmail },
-          });
-          console.log(response);
-          setExtractions(response.data.data.logs);
-        } catch (e) {
-          alert("Failed to fetch metadata.");
-        } finally {
-          setIsLoading(false);
-        }
-      };
+  // useEffect(() => {
+  //   if (userEmail) {
+  //     const fetchMetadata = async () => {
+  //       try {
+  //         setIsLoading(true);
+  //         const response = await axios.get("/metadata/logs", {
+  //           params: { email: userEmail },
+  //         });
+  //         console.log(response);
+  //         setExtractions(response.data.data.logs);
+  //       } catch (e) {
+  //         alert("Failed to fetch metadata.");
+  //       } finally {
+  //         setIsLoading(false);
+  //       }
+  //     };
 
-      fetchMetadata();
-    }
-  }, [userEmail]);
+  //     fetchMetadata();
+  //   }
+  // }, [userEmail]);
 
   // LeftBar Click Handler
   const handleExtractionClick = (extraction) => {
@@ -62,6 +89,7 @@ export default function Logs() {
     setShowAll(false);
   };
 
+  // Download Button Click Handler
   const handleClickDownload = () => {
     if (selectedExtraction?.input?.file) {
       const base64Data = selectedExtraction.input.file;
@@ -167,22 +195,28 @@ export default function Logs() {
   return (
     <div className="flex h-screen">
       {/* LeftBar */}
-      <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 w-56">
-        <nav className="space-y-2 w-full overflow-y-auto">
-          {isLoading ? (
+      <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 md:w-1/5 lg:w-1/6 h-full overflow-y-auto">
+        <nav className="space-y-2 w-full">
+          {/* {isLoading ? (
             <>
               <LogLeftBarSkeleton />
               <LogLeftBarSkeleton />
               <LogLeftBarSkeleton />
             </>
-          ) : extractions.length ? (
+          ) : */}
+          {extractions.length ? (
             extractions.map((extraction, index) => (
               <div
                 key={index}
                 className="py-2 px-4 bg-gray-200 dark:bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
                 onClick={() => handleExtractionClick(extraction)}
               >
-                Extraction {index + 1}
+                {/* Displaying 'E' followed by index number on mobile screens */}
+                <span className="md:hidden lg:hidden">E{index + 1}</span>
+                {/* Displaying full "Extraction" text on larger screens */}
+                <span className="hidden lg:inline md:inline">
+                  Extraction {index + 1}
+                </span>
               </div>
             ))
           ) : (
@@ -243,6 +277,7 @@ export default function Logs() {
           </Card>
         </div>
       </div>
+      {/* 평가 모달 */}
       {evalueateModal && (
         <Modal
           title="평가하기"

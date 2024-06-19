@@ -1,48 +1,51 @@
-import React, { useState } from "react";
+import React from "react";
 
 export default function RenderLogMetaDataContent({
   selectedExtraction,
   showAll,
   toogleShowAll,
 }) {
+  const isPDF = selectedExtraction?.input?.file.startsWith("JVBERi0");
+  const contents = selectedExtraction?.output;
+
   return (
     <div className="grid grid-cols-1 gap-4">
       {selectedExtraction?.input?.file ? (
-        selectedExtraction.input.file.startsWith("JVBERi0") ? (
-          selectedExtraction?.output.map((feature, index) => (
+        // pdf file
+        isPDF ? (
+          contents.map((feature, index) => (
             <div className="flex flex-col" key={index}>
+              {/* key */}
               <span className="text-gray-500 dark:text-gray-400">
                 {feature.key}
               </span>
+              {/* value */}
               <span className="font-medium">
                 {feature.value === "Not provided" ? "-" : feature.value}
               </span>
             </div>
           ))
         ) : (
+          // image file
           <div className="grid grid-cols-1 gap-4">
-            {selectedExtraction.output
+            {contents
+              // 처음에는 1개만 보여주고, 버튼을 누르면 전체를 보여줌
               .slice(0, showAll ? undefined : 1)
               .map((item, index) => (
                 <div className="flex flex-col">
-                  {index === 0 ? (
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Description
-                    </span>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">
-                      relation{item.key}
-                    </span>
-                  )}
-
+                  {/* key */}
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {index === 0 ? "Description" : "Relation"}
+                  </span>
+                  {/* value */}
                   <React.Fragment key={index}>
                     {item.value}
-                    {index < selectedExtraction.output.length - 1 && <br />}
+                    {index < contents.length - 1 && <br />}
                   </React.Fragment>
                 </div>
               ))}
-
-            {selectedExtraction.output.length > 1 && (
+            {/* show all Button */}
+            {contents.length > 1 && (
               <button
                 className="mt-2 text-blue-500 hover:text-blue-700"
                 onClick={toogleShowAll}
