@@ -72,7 +72,7 @@ export default function Header() {
           </>
         ) : (
           // 로그인, 회원가입 버튼
-          <Button variant="outline" onClick={handleClickMove}>
+          <Button variant="default" onClick={handleClickMove}>
             {router.pathname === "/login" ? "Sign Up" : "Login"}
           </Button>
         )}

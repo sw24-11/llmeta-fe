@@ -167,8 +167,8 @@ export default function Logs() {
   return (
     <div className="flex h-screen">
       {/* LeftBar */}
-      <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 w-56">
-        <nav className="space-y-2 w-full overflow-y-auto">
+      <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 md:w-1/5 lg:w-1/6 h-full overflow-y-auto">
+        <nav className="space-y-2 w-full">
           {isLoading ? (
             <>
               <LogLeftBarSkeleton />
@@ -182,7 +182,12 @@ export default function Logs() {
                 className="py-2 px-4 bg-gray-200 dark:bg-gray-800 rounded-md mb-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
                 onClick={() => handleExtractionClick(extraction)}
               >
-                Extraction {index + 1}
+                {/* Displaying 'E' followed by index number on mobile screens */}
+                <span className="md:hidden lg:hidden">E{index + 1}</span>
+                {/* Displaying full "Extraction" text on larger screens */}
+                <span className="hidden lg:inline md:inline">
+                  Extraction {index + 1}
+                </span>
               </div>
             ))
           ) : (
@@ -243,6 +248,7 @@ export default function Logs() {
           </Card>
         </div>
       </div>
+      {/* 평가 모달 */}
       {evalueateModal && (
         <Modal
           title="평가하기"

@@ -1,3 +1,5 @@
+import React from "react";
+
 function FileIcon(props) {
   return (
     <svg
@@ -204,7 +206,7 @@ function UserIcon(props) {
   );
 }
 
-function EvaluateIcon(className) {
+function EvaluateIcon({ className }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -224,21 +226,23 @@ function EvaluateIcon(className) {
 }
 
 function StarIcon({ filled, onClick }) {
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6 cursor-pointer"
-    fill={filled ? "yellow" : "none"}
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    onClick={onClick}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 2L15.09 8.09L22 9.27L17 14.14L18.18 21L12 17.77L5.82 21L7 14.14L2 9.27L8.91 8.09L12 2z"
-    />
-  </svg>;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 cursor-pointer"
+      fill={filled ? "yellow" : "none"}
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      onClick={onClick}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 2L15.09 8.09L22 9.27L17 14.14L18.18 21L12 17.77L5.82 21L7 14.14L2 9.27L8.91 8.09L12 2z"
+      />
+    </svg>
+  );
 }
 
 function LoadingIcon({ className, ...props }) {

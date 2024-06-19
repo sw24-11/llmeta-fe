@@ -241,8 +241,10 @@ export default function Home() {
         </div>
         <div className="mt-8 flex justify-center">
           <div className="w-full max-w-md">
+            {/* Extract Button */}
             <Button
               className="w-full mb-4"
+              variant="default"
               onClick={handleExtract}
               disabled={!selectedFile || isLoading}
             >
@@ -255,6 +257,7 @@ export default function Home() {
                 "Extract"
               )}
             </Button>
+            {/* View Logs */}
             <Button
               variant="default"
               asChild="true"
