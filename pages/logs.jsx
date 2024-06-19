@@ -6,16 +6,17 @@ import {
   Card,
 } from "@/components/Card";
 import { StarIcon } from "@/components/constants/Icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "../lib/axios";
 import Modal from "@/components/Modal";
 import RenderLogActionsContent from "@/components/RenderLogActionsContent";
 import RenderLogMetaDataContent from "@/components/RenderLogMetaDataContent";
 import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
-import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
+// import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
 
 export async function getServerSideProps(context) {
   const userEmail = context.req.cookies.userEmail;
+  alert(userEmail);
   let extractions = [];
 
   try {
@@ -24,7 +25,7 @@ export async function getServerSideProps(context) {
     });
     extractions = response.data.data.logs;
   } catch (e) {
-    alert("Failed to fetch metadata.");
+    alert(e.message);
   }
 
   return {
@@ -45,11 +46,7 @@ export default function Logs({ extractions }) {
   const [feedback, setFeedback] = useState("");
   const [showAll, setShowAll] = useState(false);
 
-  // useEffect(() => {
-  //   if (extractions) {
-  //     setIsLoading(false);
-  //   }
-  // }, [extractions]);
+  /**  서버 사이드 렌더링 전, CSR, skeleton UI 구현 코드 입니다. */
 
   // Fetch User Email from LocalStorage
   // useEffect(() => {
