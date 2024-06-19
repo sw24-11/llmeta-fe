@@ -1,5 +1,4 @@
 import { Button } from "@/components/Button";
-import { Separator } from "@/components/Separator";
 import {
   CardTitle,
   CardDescription,
@@ -76,7 +75,7 @@ export default function SignUp() {
   };
 
   return (
-    <main className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md mx-auto">
         <Card>
           <CardHeader>
