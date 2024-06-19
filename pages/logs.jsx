@@ -16,6 +16,7 @@ import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
 
 export async function getServerSideProps(context) {
   const userEmail = context.req.cookies.userEmail;
+  console.log("userEmail", userEmail);
   let extractions = [];
 
   try {
@@ -35,7 +36,7 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default function Logs({ extractions }) {
+export default function Logs({ userEmail, extractions }) {
   // const [userEmail, setUserEmail] = useState("");
   // const [extractions, setExtractions] = useState([]);
   const [selectedExtraction, setSelectedExtraction] = useState(null);
@@ -187,6 +188,10 @@ export default function Logs({ extractions }) {
     setRating(0);
     setEvalueateModal(false);
   };
+
+  if (!extractions) {
+    return <div>Loading...{userEmail}</div>;
+  }
 
   return (
     <div className="flex h-screen">
