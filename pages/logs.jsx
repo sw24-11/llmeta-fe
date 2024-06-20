@@ -19,13 +19,27 @@ export async function getServerSideProps(context) {
   console.log("userEmail", userEmail);
   let extractions = [];
 
+  // Redirect to login page if user is not logged in
+  if (userEmail === undefined) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  // Fetch Metadata Logs
   try {
     const response = await axios.get("/metadata/logs", {
       params: { email: userEmail },
     });
     extractions = response.data.data.logs;
   } catch (e) {
-    alert(e.message);
+    // 500 error custom page
+    return {
+      notFound: true,
+    };
   }
 
   return {
@@ -205,6 +219,7 @@ export default function Logs({ userEmail, extractions }) {
               <LogLeftBarSkeleton />
             </>
           ) : */}
+
           {extractions.length ? (
             extractions.map((extraction, index) => (
               <div
