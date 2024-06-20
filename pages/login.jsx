@@ -12,7 +12,7 @@ import { Input } from "@/components/Input";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "../lib/axios";
-import { setCookie } from "cookies-next";
+// import { setCookie } from "cookies-next";
 
 export default function Login() {
   const router = useRouter();
@@ -37,8 +37,11 @@ export default function Login() {
       if (response.status === 200) {
         localStorage.setItem("userName", response.data.data.name);
         localStorage.setItem("userEmail", response.data.data.email);
-        setCookie("userName", response.data.data.name);
-        setCookie("userEmail", response.data.data.email);
+        /**
+         * SSR 환경을 위한 쿠기 설정
+         */
+        // setCookie("userName", response.data.data.name);
+        // setCookie("userEmail", response.data.data.email);
         router.push("/");
       }
     } catch (error) {

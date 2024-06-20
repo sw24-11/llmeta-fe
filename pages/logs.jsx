@@ -6,93 +6,101 @@ import {
   Card,
 } from "@/components/Card";
 import { StarIcon } from "@/components/constants/Icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import Modal from "@/components/Modal";
 import RenderLogActionsContent from "@/components/RenderLogActionsContent";
 import RenderLogMetaDataContent from "@/components/RenderLogMetaDataContent";
 import RenderLogPreviewContent from "@/components/RenderLogPreviewContent";
-// import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
+import LogLeftBarSkeleton from "@/components/LogLeftBarSkeletonUi";
 
-export async function getServerSideProps(context) {
-  const userEmail = context.req.cookies.userEmail;
-  console.log("userEmail", userEmail);
-  let extractions = [];
+/**
+ * 서버사이드 렌더링을 위한 getServerSideProps 함수
+ * @param {*} context
+ * @returns props
+ */
+// export async function getServerSideProps(context) {
+//   const userEmail = context.req.cookies.userEmail;
+//   console.log("userEmail", userEmail);
+//   let extractions = [];
 
-  // Redirect to login page if user is not logged in
-  if (userEmail === undefined) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
+//   // Redirect to login page if user is not logged in
+//   if (userEmail === undefined) {
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  // Fetch Metadata Logs
-  try {
-    const response = await axios.get("/metadata/logs", {
-      params: { email: userEmail },
-    });
-    extractions = response.data.data.logs;
-  } catch (e) {
-    // 500 error custom page
-    return {
-      notFound: true,
-    };
-  }
+//   // Fetch Metadata Logs
+//   try {
+//     const response = await axios.get("/metadata/logs", {
+//       params: { email: userEmail },
+//     });
+//     extractions = response.data.data.logs;
+//   } catch (e) {
+//     console.error(e);
+//     // 500 error custom page
+//     return {
+//       notFound: true,
+//     };
+//   }
 
-  return {
-    props: {
-      userEmail,
-      extractions: extractions,
-    },
-  };
-}
+//   return {
+//     props: {
+//       userEmail,
+//       extractions: extractions,
+//     },
+//   };
+// }
 
-export default function Logs({ userEmail, extractions }) {
-  // const [userEmail, setUserEmail] = useState("");
-  // const [extractions, setExtractions] = useState([]);
+export default function Logs() {
+  const [userEmail, setUserEmail] = useState("");
+  const [extractions, setExtractions] = useState([]);
   const [selectedExtraction, setSelectedExtraction] = useState(null);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [evalueateModal, setEvalueateModal] = useState(false);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [showAll, setShowAll] = useState(false);
 
-  /**  서버 사이드 렌더링 전, CSR, skeleton UI 구현 코드 입니다. */
+  /**
+   * CSR, Skeleton UI
+   */
 
   // Fetch User Email from LocalStorage
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedUserName = localStorage.getItem("userEmail");
-  //     if (storedUserName) {
-  //       setUserEmail(storedUserName);
-  //     }
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserName = localStorage.getItem("userEmail");
+      if (storedUserName) {
+        setUserEmail(storedUserName);
+      }
+    }
+  }, []);
 
   // Fetch Metadata Logs
-  // useEffect(() => {
-  //   if (userEmail) {
-  //     const fetchMetadata = async () => {
-  //       try {
-  //         setIsLoading(true);
-  //         const response = await axios.get("/metadata/logs", {
-  //           params: { email: userEmail },
-  //         });
-  //         console.log(response);
-  //         setExtractions(response.data.data.logs);
-  //       } catch (e) {
-  //         alert("Failed to fetch metadata.");
-  //       } finally {
-  //         setIsLoading(false);
-  //       }
-  //     };
+  useEffect(() => {
+    if (userEmail) {
+      const fetchMetadata = async () => {
+        try {
+          setIsLoading(true);
+          const response = await axios.get("/metadata/logs", {
+            params: { email: userEmail },
+          });
 
-  //     fetchMetadata();
-  //   }
-  // }, [userEmail]);
+          setExtractions(response.data.data.logs);
+        } catch (e) {
+          alert("Failed to fetch metadata.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchMetadata();
+    }
+  }, [userEmail]);
 
   // LeftBar Click Handler
   const handleExtractionClick = (extraction) => {
@@ -212,15 +220,13 @@ export default function Logs({ userEmail, extractions }) {
       {/* LeftBar */}
       <div className="bg-white p-4 flex flex-col items-start justify-between border border-gray-200 md:w-1/5 lg:w-1/6 h-full overflow-y-auto">
         <nav className="space-y-2 w-full">
-          {/* {isLoading ? (
+          {isLoading ? (
             <>
               <LogLeftBarSkeleton />
               <LogLeftBarSkeleton />
               <LogLeftBarSkeleton />
             </>
-          ) : */}
-
-          {extractions.length ? (
+          ) : extractions.length ? (
             extractions.map((extraction, index) => (
               <div
                 key={index}
